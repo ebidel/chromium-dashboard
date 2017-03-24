@@ -16,20 +16,24 @@ install:
   - npm install -g gulp
   - npm install
   - npm --prefix ./travis install ./travis
-before_script:
+#before_script:
+#  - export GAE_APP_ID=cr-status
+#  - export LH_MIN_PASS_SCORE=85
+script:
+  # - npm run build
+  - npm run lint
+  # - npm run test
+after_success:
   - export GAE_APP_ID=cr-status
   - export LH_MIN_PASS_SCORE=85
-  #- npm run build
   - ./travis/install_google_cloud_sdk.sh
   - ./travis/deploy_pr.sh
   - node ./travis/updateGithubStatus.js pending $STAGED_URL
-script:
   - node ./travis/runLighthouse.js $STAGED_URL $LH_MIN_PASS_SCORE
-after_success:
-  - node ./travis/updateGithubStatus.js success $STAGED_URL $LH_SCORE
+  - node ./travis/updateGithubStatus.js $LH_STATUS $STAGED_URL $LH_MIN_PASS_SCORE $LH_SCORE
   #- node ./travis/removeStagedPRs.js
-after_failure:
-  - node ./travis/updateGithubStatus.js failure $STAGED_URL
+#after_failure:
+#  - node ./travis/updateGithubStatus.js failure $STAGED_URL
 
 # Ideally we could use provider: gae, but we need to stage the PR to an URL,
 # not deploy the site after a succesful build.

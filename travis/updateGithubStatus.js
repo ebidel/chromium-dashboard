@@ -43,7 +43,8 @@ github.authenticate({type: 'oauth', token: OAUTH_TOKEN}); // lighthousebot creds
 const args = process.argv.slice(2);
 const status = args[0];
 const target_url = args[1];
-const score = args[2];
+const minScore = args[2];
+const score = args[3];
 
 const opts = {
   owner: REPO_OWNER,
@@ -59,8 +60,9 @@ switch (status) {
     opts.description = `Auditing these PR changes on ${target_url}...`;
     break;
   case 'success':
+    opts.description = `Auditing complete. New Lighthouse score: ${score}`;
   case 'failure':
-    opts.description = `Auditing complete. New Lighthouse score: ${score}/100`;
+    opts.description = `Auditing complete. New Lighthouse score: ${score}. Required: > ${minScore}`;
     break;
   default:
     // noop

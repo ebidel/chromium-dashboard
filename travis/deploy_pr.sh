@@ -3,11 +3,11 @@ set -ev
 
 # Auto-Deploy Pull Request
 
-# If encrypted variables aren't available, abort
-#if [ -z "${GITHUB_OAUTH_TOKEN}" ]; then
-#  echo "Encrypted variables are unavailable, skipping."
-#  exit
-#fi
+# If there no githug oauth otken, abort.
+if [ -z "${GITHUB_OAUTH_TOKEN}" ]; then
+ echo "Github OAuth token not available."
+ exit
+fi
 
 # If this isn't a pull request, abort.
 if [ "${TRAVIS_EVENT_TYPE}" != "pull_request" ]; then
@@ -17,12 +17,9 @@ fi
 
 # If there were build failures, abort
 if [ "${TRAVIS_TEST_RESULT}" = "1" ]; then
-  echo "Deploy aborted, there were test failures."
+  echo "Deploy aborted, there were build/test failures."
   exit
 fi
-
-# Set git build status to Pending
-node travis/updateGitStatus.js pending
 
 # Set the AppEngine version for staging
 VERSION=pr-$TRAVIS_PULL_REQUEST
@@ -35,7 +32,7 @@ echo Pull Request: $TRAVIS_PULL_REQUEST will be staged at $STAGED_URL
 $HOME/google-cloud-sdk/bin/gcloud app deploy app.yaml -q --no-promote --version $VERSION
 
 # if [ $? -eq 0 ]; then
-#   node travis/updateGitStatus.js success $STAGED_URL
+#   node travis/updateGithubStatus.js pending $STAGED_URL
 # else
-#   node travis/updateGitStatus.js failure
+#   node travis/updateGithubStatus.js failure $STAGED_URL
 # fi

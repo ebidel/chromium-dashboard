@@ -46,12 +46,18 @@ const args = process.argv.slice(2);
 const stageUrl = args[0];
 const minPassScore = Number(args[1]);
 
+console.log(stageUrl, minPassScore);
+
 testOnHeadlessChrome(stageUrl).then(score => {
   process.env.LH_SCORE = score;
+
   if (score >= minPassScore) {
+    process.env.LH_STATUS = 'success';
     console.log(`Lighthouse score: ${score}`)
     process.exit(0);
     return;
   }
+
+  process.env.LH_STATUS = 'failture';
   process.exit(1);
 });
