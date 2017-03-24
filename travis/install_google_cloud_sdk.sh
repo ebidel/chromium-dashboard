@@ -11,7 +11,7 @@ openssl aes-256-cbc -K $encrypted_4e28b26c6af1_key -iv $encrypted_4e28b26c6af1_i
 curl https://sdk.cloud.google.com | bash
 
 # Update any necessary components
-$HOME/google-cloud-sdk/bin/gcloud components update app -q
+$HOME/google-cloud-sdk/bin/gcloud components update -q
 
 # Set the AppEngine App ID to $GAE_APP_ID
 $HOME/google-cloud-sdk/bin/gcloud config set project $GAE_APP_ID

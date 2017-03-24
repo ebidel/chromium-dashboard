@@ -15,6 +15,7 @@ install:
   - npm install -g bower
   - npm install -g gulp
   - npm install
+  - npm --prefix ./travis install ./travis
 before_script:
   - export GAE_APP_ID=cr-status
   - export LH_MIN_PASS_SCORE=85
