@@ -38,7 +38,7 @@ if (!OAUTH_TOKEN) {
 }
 
 const github = new Github({debug: false, Promise: Promise});
-github.authenticate({type: 'oauth', token: process.env.OAUTH_TOKEN}); // lighthousebot creds
+github.authenticate({type: 'oauth', token: OAUTH_TOKEN}); // lighthousebot creds
 
 const args = process.argv.slice(2);
 const status = args[0];
