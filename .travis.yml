@@ -1,0 +1,40 @@
+language: node_js
+node_js: '7'
+dist: trusty
+sudo: false
+git:
+  depth: 1
+env:
+  global:
+  - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+  - CLOUDSDK_PYTHON_SITEPACKAGES=1
+cache:
+  directories:
+  - node_modules
+install:
+- npm install
+before_script:
+- export GAE_APP_ID=cr-status
+- export LH_MIN_PASS_SCORE=85
+- npm run build
+- ./travis/install_google_cloud_sdk.sh
+- ./travis/deploy_pr.sh
+- node ./travis/updateGithubStatus.js pending $STAGED_URL
+script:
+- node ./travis/runLighthouse.js $STAGED_URL $LH_MIN_PASS_SCORE
+after_success:
+- node ./travis/updateGithubStatus.js success $STAGED_URL $LH_SCORE
+#- node ./travis/removeStagedPRs.js
+after_failure:
+- node ./travis/updateGithubStatus.js failure $STAGED_URL
+
+# Ideally we could use provider: gae, but we need to stage the PR to an URL,
+# not deploy the site after a succesful build.
+#deploy:
+#  provider: gae
+#  config: "./app.yaml"
+#  keyfile: gcloud-client-secret.json
+#  project: lighthouse-ci
+#  #on: staging-branch
+#  version: staging
+#  no_promote: true
