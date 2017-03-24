@@ -18,9 +18,9 @@ install:
 before_script:
 - export GAE_APP_ID=cr-status
 - export LH_MIN_PASS_SCORE=85
-- npm run build
-- ./travis/install_google_cloud_sdk.sh
-- ./travis/deploy_pr.sh
+#- npm run build
+- "/travis/install_google_cloud_sdk.sh"
+- "./travis/deploy_pr.sh"
 - node ./travis/updateGithubStatus.js pending $STAGED_URL
 script:
 - node ./travis/runLighthouse.js $STAGED_URL $LH_MIN_PASS_SCORE
