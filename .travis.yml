@@ -12,6 +12,8 @@ cache:
   directories:
   - node_modules
 install:
+- npm install -g bower
+- npm install -g gulp
 - npm install
 before_script:
 - export GAE_APP_ID=cr-status
