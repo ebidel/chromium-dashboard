@@ -82,7 +82,7 @@ if (require.main === module) {
   const score = args[2];
   const minPassScore = Number(process.env.LH_MIN_PASS_SCORE);
 
-  updateStatus(status, targetUrl, score, minPassScore);
+  updateGithubStatus(status, targetUrl, score, minPassScore);
 }
 
 exports.updateGithubStatus = updateGithubStatus;
