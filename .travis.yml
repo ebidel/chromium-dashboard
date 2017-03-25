@@ -27,10 +27,10 @@ after_success:
 notifications:
   webhooks:
     urls:
-      - https://58708a15.ngrok.io/github_status
+      - https://88a825eb.ngrok.io/github_status
     on_success: always # default: always
     on_failure: never # default: always
-    on_start: always   # default: never
+    # on_start: always   # default: never
     on_cancel: never # default: always
     #on_error: always # default: always
 
