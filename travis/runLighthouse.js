@@ -20,7 +20,7 @@ const fetch = require('node-fetch'); // polyfill
 const exec = require('child_process').exec;
 const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
 
-// fetch('https://58708a15.ngrok.io/github_status', {
+// fetch('https://88a825eb.ngrok.io/github_status', {
 //   method: 'POST',
 //   body: JSON.stringify({foo: 5})
 // })
