@@ -25,8 +25,9 @@ script:
   - npm run lint
   # - npm run test
 after_success:
-  - LH_MIN_PASS_SCORE=85
-  - GAE_APP_ID=cr-status ./travis/deploy_pr.sh
+  - export LH_MIN_PASS_SCORE=85
+  - export GAE_APP_ID=cr-status
+  - ./travis/deploy_pr.sh
   # - node ./travis/removeStagedPRs.js
 
 # Ideally we could use provider: gae, but we need to stage the PR to an URL,
