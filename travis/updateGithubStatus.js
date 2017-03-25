@@ -57,6 +57,7 @@ function updateGithubStatus(status, targetUrl, score, minPassScore) {
       break;
     case 'success':
       opts.description = `Passed. New Lighthouse score would be ${score}/100.`;
+      break;
     case 'failure':
       opts.description = `Failed. New Lighthouse score would be ${score}/100 (required ${minPassScore}+).`;
       break;

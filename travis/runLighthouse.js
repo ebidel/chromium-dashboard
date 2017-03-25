@@ -17,6 +17,7 @@
 
 const chalk = require('chalk');
 const fetch = require('node-fetch'); // polyfill
+const exec = require('child_process').exec;
 const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
 
 /**
@@ -44,6 +45,26 @@ function testOnHeadlessChrome(testUrl) {
     });
 }
 
+const GCLOUD_CMD = `${process.env.HOME}/google-cloud-sdk/bin/gcloud`;
+const PR_NUM = parseInt(process.env.TRAVIS_PULL_REQUEST);
+
+function removeStagedPR(prNum) {
+  return new Promise((resolve, reject) => {
+    const cmd = `${GCLOUD_CMD} app versions delete pr-${prNum}`;
+    exec(cmd, (err, stdout, stderr) => {
+      // stdout = stdout.trim();
+      // stderr = stderr.trim();
+      if (err) {
+        console.log(cmd, chalk.red('FAILED'));
+        reject(err);
+        return;
+      }
+      console.log(chalk.cyan(stdout));
+      resolve(stdout);
+    });
+  });
+}
+
 const args = process.argv.slice(2);
 const stageUrl = args[0];
 const minPassScore = Number(process.env.LH_MIN_PASS_SCORE);
@@ -59,6 +80,8 @@ updateGithubStatus('pending', stageUrl)
 
     console.log('Lighthouse score:', chalk.green(score));
     return updateGithubStatus('success', stageUrl, score);
-  }).catch(err => {
+  })
+  .then(status => removeStagedPR(PR_NUM))
+  .catch(err => {
     return updateGithubStatus('error');
   });
