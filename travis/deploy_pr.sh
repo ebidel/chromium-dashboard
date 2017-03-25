@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-./travis/install_google_cloud_sdk.sh
-
 # Auto-Deploy Pull Request
 
 # If there no githug oauth otken, abort.
@@ -22,6 +20,10 @@ if [ "${TRAVIS_TEST_RESULT}" = "1" ]; then
   echo "Deploy aborted, there were build/test failures."
   exit
 fi
+
+node travis/updateGithubStatus.js pending
+
+./travis/install_google_cloud_sdk.sh
 
 # Set the AppEngine version for staging
 VERSION=pr-$TRAVIS_PULL_REQUEST

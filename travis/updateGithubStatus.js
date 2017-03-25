@@ -52,7 +52,8 @@ function updateGithubStatus(status, targetUrl, score, minPassScore) {
 
   switch (status) {
     case 'pending':
-      opts.description = `Auditing PR changes on ${targetUrl}...`;
+      opts.description = targetUrl ? `Auditing PR changes on ${targetUrl}...` :
+                         `Deploying PR to staging...`
       break;
     case 'success':
       opts.description = `Auditing complete. New Lighthouse score: ${score}`;
