@@ -12,17 +12,18 @@ cache:
   directories:
   - node_modules
 install:
-  - npm install -g bower gulp
-  - npm install
-  - npm --prefix ./travis install ./travis
+  #- npm install -g bower gulp
+  #- npm install
+  #- npm --prefix ./travis install ./travis
 script:
   # - npm run build
-  - npm run lint
+  # - npm run lint
   # - npm run test
+  - echo 'fast'
 after_success:
   - export LH_MIN_PASS_SCORE=85
   - export GAE_APP_ID=cr-status
-  - ./travis/deploy_pr_gae.sh
+  # - ./travis/deploy_pr_gae.sh
 
 notifications:
   webhooks:
