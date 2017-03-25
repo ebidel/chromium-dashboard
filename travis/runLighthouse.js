@@ -15,9 +15,9 @@
  */
 'use strict';
 
+const chalk = require('chalk');
 const fetch = require('node-fetch'); // polyfill
-
-const MIN_PASS_SCORE = Number(process.env.LH_MIN_PASS_SCORE);
+const updateGithubStatus = require('./updateGithubStatus.js');
 
 /**
  * Calculates an overall score across all sub audits.
@@ -46,17 +46,17 @@ function testOnHeadlessChrome(testUrl) {
 
 const args = process.argv.slice(2);
 const stageUrl = args[0];
+const minPassScore = Number(process.env.LH_MIN_PASS_SCORE);
 
-testOnHeadlessChrome(stageUrl).then(score => {
-  process.env.LH_SCORE = score;
+updateGithubStatus('pending', stageUrl)
+  .then(status => testOnHeadlessChrome(stageUrl))
+  .then(score => {
+    if (score < minPassScore) {
+      console.log('Lighthouse score:', chalk.red(score));
+      return updateGithubStatus('failure', stageUrl, score, minPassScore);
+      process.exit(1);
+    }
 
-  if (score >= MIN_PASS_SCORE) {
-    process.env.LH_STATUS = 'success';
-    console.log(`Lighthouse score: ${score}`)
-    process.exit(0);
-    return;
-  }
-
-  process.env.LH_STATUS = 'failture';
-  process.exit(1);
-});
+    console.log('Lighthouse score:', chalk.green(score));
+    return updateGithubStatus('success', stageUrl, score);
+  });

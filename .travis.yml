@@ -27,10 +27,11 @@ after_success:
   - export GAE_APP_ID=cr-status
   - export LH_MIN_PASS_SCORE=85
   # - source ./travis/install_google_cloud_sdk.sh
-  - source ./travis/deploy_pr.sh
-  - node ./travis/updateGithubStatus.js pending $STAGED_URL
-  - node ./travis/runLighthouse.js $STAGED_URL
-  - node ./travis/updateGithubStatus.js $LH_STATUS $STAGED_URL $LH_SCORE
+  # - source ./travis/deploy_pr.sh
+  - ./travis/deploy_pr.sh
+  # - node ./travis/updateGithubStatus.js pending $STAGED_URL
+  # - node ./travis/runLighthouse.js $STAGED_URL
+  # - node ./travis/updateGithubStatus.js $LH_STATUS $STAGED_URL $LH_SCORE
   #- node ./travis/removeStagedPRs.js
 #after_failure:
 #  - node ./travis/updateGithubStatus.js failure $STAGED_URL

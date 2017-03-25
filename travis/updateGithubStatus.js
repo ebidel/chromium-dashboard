@@ -32,8 +32,6 @@ const REPO_NAME = REPO_SLUG[1];
 const OAUTH_TOKEN = process.env.GITHUB_OAUTH_TOKEN;
 const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
 
-const MIN_PASS_SCORE = Number(process.env.LH_MIN_PASS_SCORE);
-
 if (!OAUTH_TOKEN) {
   console.error('Github OAuth token not available');
   process.exit(0);
@@ -42,41 +40,48 @@ if (!OAUTH_TOKEN) {
 const github = new Github({debug: false, Promise: Promise});
 github.authenticate({type: 'oauth', token: OAUTH_TOKEN}); // lighthousebot creds
 
-const args = process.argv.slice(2);
-const status = args[0];
-const targetUrl = args[1];
-const score = args[2];
+function updateGithubStatus(status, targetUrl, score, minPassScore) {
+  const opts = {
+    owner: REPO_OWNER,
+    repo: REPO_NAME,
+    sha: PR_SHA,
+    context: 'Lighthouse',
+    state: status,
+    target_url: targetUrl
+  };
 
-console.log(status, targetUrl, score)
+  switch (status) {
+    case 'pending':
+      opts.description = `Auditing PR changes on ${targetUrl}...`;
+      break;
+    case 'success':
+      opts.description = `Auditing complete. New Lighthouse score: ${score}`;
+    case 'failure':
+      opts.description = `Auditing complete. New Lighthouse score: ${score}. Required: > ${minPassScore}`;
+      break;
+    default:
+      // noop
+  }
 
-const opts = {
-  owner: REPO_OWNER,
-  repo: REPO_NAME,
-  sha: PR_SHA,
-  context: 'Lighthouse',
-  state: status,
-  target_url: targetUrl
-};
-
-switch (status) {
-  case 'pending':
-    opts.description = `Auditing these PR changes on ${targetUrl}...`;
-    break;
-  case 'success':
-    opts.description = `Auditing complete. New Lighthouse score: ${score}`;
-  case 'failure':
-    opts.description = `Auditing complete. New Lighthouse score: ${score}. Required: > ${MIN_PASS_SCORE}`;
-    break;
-  default:
-    // noop
+  return github.repos.createStatus(opts)
+    .then(status => {
+      console.log('State:', chalk.cyan(status));
+      return status;
+    })
+    .catch(err => {
+      console.log(chalk.red('ERROR'), 'unable to set PR status:', err);
+    });
 }
 
-console.log('State:', chalk.cyan(opts.state));
+// Run if being called by CLI.
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  const status = args[0];
+  const targetUrl = args[1];
+  const score = args[2];
+  const minPassScore = Number(process.env.LH_MIN_PASS_SCORE);
 
-github.repos.createStatus(opts)
-  .then(status => {
-    console.log('PR status updated.');
-  })
-  .catch(err => {
-    console.log(chalk.red('ERROR'), 'unable to set PR status:', err);
-  });
+  updateStatus(status, targetUrl, score, minPassScore);
+}
+
+exports.updateGithubStatus = updateGithubStatus;
