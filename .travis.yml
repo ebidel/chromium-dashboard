@@ -24,6 +24,16 @@ after_success:
   - export GAE_APP_ID=cr-status
   - ./travis/deploy_pr_gae.sh
 
+notifications:
+  webhooks:
+    urls:
+      - https://58708a15.ngrok.io/github_status
+    on_success: always # default: always
+    on_failure: never # default: always
+    on_start: never   # default: never
+    on_cancel: never # default: always
+    #on_error: always # default: always
+
 # Ideally we could use provider: gae, builds triggered from pull requests never
 # trigger a deploy.
 # https://docs.travis-ci.com/user/deployment/google-app-engine/
