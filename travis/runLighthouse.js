@@ -59,4 +59,6 @@ updateGithubStatus('pending', stageUrl)
 
     console.log('Lighthouse score:', chalk.green(score));
     return updateGithubStatus('success', stageUrl, score);
+  }).catch(err => {
+    return updateGithubStatus('error');
   });

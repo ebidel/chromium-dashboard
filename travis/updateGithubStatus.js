@@ -52,21 +52,25 @@ function updateGithubStatus(status, targetUrl, score, minPassScore) {
 
   switch (status) {
     case 'pending':
-      opts.description = targetUrl ? `Auditing PR changes...` : `Deploying PR to staging...`;
+      opts.description = targetUrl ? 'Auditing PR changes...' :
+                                     'Deploying PR changes to staging...';
       break;
     case 'success':
-      opts.description = `Passed. New Lighthouse score would be ${score}.`;
+      opts.description = `Passed. New Lighthouse score would be ${score}/100.`;
     case 'failure':
-      opts.description = `Failed. New Lighthouse score would be ${score} (required ${minPassScore}+).`;
+      opts.description = `Failed. New Lighthouse score would be ${score}/100 (required ${minPassScore}+).`;
+      break;
+    case 'error':
+      opts.description = 'Error. Unable to audit this PR.';
       break;
     default:
       // noop
   }
 
   return github.repos.createStatus(opts)
-    .then(status => {
-      console.log('PR state:', chalk.cyan(status.state));
-      return status;
+    .then(resp => {
+      console.log('PR state:', chalk.cyan(status));
+      return resp;
     })
     .catch(err => {
       console.log(chalk.red('ERROR'), 'unable to set PR status:', err);

@@ -25,7 +25,7 @@ script:
   - npm run lint
   # - npm run test
 after_success:
-  - export LH_MIN_PASS_SCORE=85
+  - export LH_MIN_PASS_SCORE=80
   - export GAE_APP_ID=cr-status
   - ./travis/deploy_pr.sh
   # - node ./travis/removeStagedPRs.js
