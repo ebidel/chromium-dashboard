@@ -55,9 +55,9 @@ function updateGithubStatus(status, targetUrl, score, minPassScore) {
       opts.description = targetUrl ? `Auditing PR changes...` : `Deploying PR to staging...`;
       break;
     case 'success':
-      opts.description = `Passed. New Lighthouse score will be ${score}.`;
+      opts.description = `Passed. New Lighthouse score would be ${score}.`;
     case 'failure':
-      opts.description = `Failed. New Lighthouse score will ${score} (required ${minPassScore}+).`;
+      opts.description = `Failed. New Lighthouse score would be ${score} (required ${minPassScore}+).`;
       break;
     default:
       // noop
