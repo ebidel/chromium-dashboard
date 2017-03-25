@@ -17,7 +17,7 @@
 
 const chalk = require('chalk');
 const fetch = require('node-fetch'); // polyfill
-const updateGithubStatus = require('./updateGithubStatus.js');
+const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
 
 /**
  * Calculates an overall score across all sub audits.

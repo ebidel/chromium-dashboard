@@ -35,10 +35,9 @@ echo Pull Request: $TRAVIS_PULL_REQUEST will be staged at $STAGED_URL
 # Deploy to AppEngine
 $HOME/google-cloud-sdk/bin/gcloud app deploy app.yaml -q --no-promote --version $VERSION
 
+# If App Engine deploy was successful, run Lighthouse.
 if [ $? -eq 0 ]; then
-  # node travis/updateGithubStatus.js pending $STAGED_URL
-  node ./travis/runLighthouse.js $STAGED_URL
-  # node ./travis/updateGithubStatus.js $LH_STATUS $STAGED_URL $LH_SCORE
+  node travis/runLighthouse.js $STAGED_URL
 else
   node travis/updateGithubStatus.js failure $STAGED_URL
 fi

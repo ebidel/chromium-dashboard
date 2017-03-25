@@ -23,7 +23,7 @@
 const chalk = require('chalk');
 const Github = require('github');
 
-console.log('Git Build Status Updater');
+console.log(chalk.cyan('Running PR status updater'));
 
 const GAE_APP_ID = process.env.GAE_APP_ID;
 const REPO_SLUG = process.env.TRAVIS_REPO_SLUG.split('/');
@@ -33,7 +33,7 @@ const OAUTH_TOKEN = process.env.GITHUB_OAUTH_TOKEN;
 const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
 
 if (!OAUTH_TOKEN) {
-  console.error('Github OAuth token not available');
+  console.error(chalk.red('Github OAuth token not available'));
   process.exit(0);
 }
 
@@ -66,7 +66,7 @@ function updateGithubStatus(status, targetUrl, score, minPassScore) {
 
   return github.repos.createStatus(opts)
     .then(status => {
-      console.log('State:', chalk.cyan(status));
+      console.log('PR state:', chalk.cyan(status));
       return status;
     })
     .catch(err => {
