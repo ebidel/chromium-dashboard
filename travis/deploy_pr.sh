@@ -25,7 +25,7 @@ fi
 VERSION=pr-$TRAVIS_PULL_REQUEST
 
 # Show the final staged URL
-export STAGED_URL=https://$VERSION-dot-$GAE_APP_ID.appspot.com
+STAGED_URL=https://$VERSION-dot-$GAE_APP_ID.appspot.com
 echo Pull Request: $TRAVIS_PULL_REQUEST will be staged at $STAGED_URL
 
 # Deploy to AppEngine
