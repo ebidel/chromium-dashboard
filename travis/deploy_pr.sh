@@ -1,5 +1,7 @@
 #!/bin/bash
-set -e
+set -ev
+
+./travis/install_google_cloud_sdk.sh
 
 # Auto-Deploy Pull Request
 
