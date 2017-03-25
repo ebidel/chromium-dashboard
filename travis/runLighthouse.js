@@ -17,6 +17,8 @@
 
 const fetch = require('node-fetch'); // polyfill
 
+const MIN_PASS_SCORE = Number(process.env.LH_MIN_PASS_SCORE);
+
 /**
  * Calculates an overall score across all sub audits.
  * @param {!Object} lhResults Lighthouse results object.
@@ -44,14 +46,11 @@ function testOnHeadlessChrome(testUrl) {
 
 const args = process.argv.slice(2);
 const stageUrl = args[0];
-const minPassScore = Number(args[1]);
-
-console.log(stageUrl, minPassScore);
 
 testOnHeadlessChrome(stageUrl).then(score => {
   process.env.LH_SCORE = score;
 
-  if (score >= minPassScore) {
+  if (score >= MIN_PASS_SCORE) {
     process.env.LH_STATUS = 'success';
     console.log(`Lighthouse score: ${score}`)
     process.exit(0);

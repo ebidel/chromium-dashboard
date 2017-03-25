@@ -29,8 +29,8 @@ after_success:
   - ./travis/install_google_cloud_sdk.sh
   - ./travis/deploy_pr.sh
   - node ./travis/updateGithubStatus.js pending $STAGED_URL
-  - node ./travis/runLighthouse.js $STAGED_URL $LH_MIN_PASS_SCORE
-  - node ./travis/updateGithubStatus.js $LH_STATUS $STAGED_URL $LH_MIN_PASS_SCORE $LH_SCORE
+  - node ./travis/runLighthouse.js $STAGED_URL
+  - node ./travis/updateGithubStatus.js $LH_STATUS $STAGED_URL $LH_SCORE
   #- node ./travis/removeStagedPRs.js
 #after_failure:
 #  - node ./travis/updateGithubStatus.js failure $STAGED_URL

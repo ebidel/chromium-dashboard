@@ -32,6 +32,8 @@ const REPO_NAME = REPO_SLUG[1];
 const OAUTH_TOKEN = process.env.GITHUB_OAUTH_TOKEN;
 const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
 
+const MIN_PASS_SCORE = Number(process.env.LH_MIN_PASS_SCORE);
+
 if (!OAUTH_TOKEN) {
   console.error('Github OAuth token not available');
   process.exit(0);
@@ -42,9 +44,10 @@ github.authenticate({type: 'oauth', token: OAUTH_TOKEN}); // lighthousebot creds
 
 const args = process.argv.slice(2);
 const status = args[0];
-const target_url = args[1];
-const minScore = args[2];
-const score = args[3];
+const targetUrl = args[1];
+const score = args[2];
+
+console.log(status, targetUrl, score)
 
 const opts = {
   owner: REPO_OWNER,
@@ -52,17 +55,17 @@ const opts = {
   sha: PR_SHA,
   context: 'Lighthouse',
   state: status,
-  target_url
+  target_url: targetUrl
 };
 
 switch (status) {
   case 'pending':
-    opts.description = `Auditing these PR changes on ${target_url}...`;
+    opts.description = `Auditing these PR changes on ${targetUrl}...`;
     break;
   case 'success':
     opts.description = `Auditing complete. New Lighthouse score: ${score}`;
   case 'failure':
-    opts.description = `Auditing complete. New Lighthouse score: ${score}. Required: > ${minScore}`;
+    opts.description = `Auditing complete. New Lighthouse score: ${score}. Required: > ${MIN_PASS_SCORE}`;
     break;
   default:
     // noop
