@@ -22,21 +22,21 @@ script:
 after_success:
   - export LH_MIN_PASS_SCORE=85
   - export GAE_APP_ID=cr-status
-  #- ./travis/deploy_pr.sh
+  - ./travis/deploy_pr_gae.sh
 
 # Ideally we could use provider: gae, builds triggered from pull requests never
 # trigger a deploy.
 # https://docs.travis-ci.com/user/deployment/google-app-engine/
-deploy:
- provider: gae
- config: app.yaml
- keyfile: gcloud-client-secret.json
- project: $GAE_APP_ID
- #on:
- #  all_branches: true
- #  condition: $MY_ENV = super_awesome
- version: staging
- no_promote: true
- skip_cleanup: true
-# after_deploy:
-#   # TODO
+# deploy:
+#  provider: gae
+#  config: app.yaml
+#  keyfile: gcloud-client-secret.json
+#  project: $GAE_APP_ID
+#  #on:
+#  #  all_branches: true
+#  #  condition: $MY_ENV = super_awesome
+#  version: staging
+#  no_promote: true
+#  skip_cleanup: true
+# # after_deploy:
+# #   # TODO
