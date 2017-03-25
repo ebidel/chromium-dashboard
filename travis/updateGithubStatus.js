@@ -56,9 +56,9 @@ function updateGithubStatus(status, targetUrl, score, minPassScore) {
                          `Deploying PR to staging...`
       break;
     case 'success':
-      opts.description = `Auditing complete. New Lighthouse score: ${score}`;
+      opts.description = `Passed. New Lighthouse score will be ${score}.`;
     case 'failure':
-      opts.description = `Auditing complete. New Lighthouse score: ${score}. Required: > ${minPassScore}`;
+      opts.description = `Failed. New Lighthouse score will ${score} (required ${minPassScore}+).`;
       break;
     default:
       // noop
@@ -66,7 +66,7 @@ function updateGithubStatus(status, targetUrl, score, minPassScore) {
 
   return github.repos.createStatus(opts)
     .then(status => {
-      console.log('PR state:', chalk.cyan(status));
+      console.log('PR state:', chalk.cyan(status.state));
       return status;
     })
     .catch(err => {

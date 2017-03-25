@@ -41,3 +41,6 @@ if [ $? -eq 0 ]; then
 else
   node travis/updateGithubStatus.js failure $STAGED_URL
 fi
+
+# TODO: delete staged PR.
+

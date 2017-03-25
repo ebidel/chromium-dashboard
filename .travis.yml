@@ -11,6 +11,7 @@ env:
 cache:
   directories:
   - node_modules
+  - static/bower_components
 install:
   - npm install -g bower
   - npm install -g gulp
