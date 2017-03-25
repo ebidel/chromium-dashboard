@@ -28,7 +28,7 @@ after_success:
 notifications:
   webhooks:
     urls:
-      - https://88a825eb.ngrok.io/github_status
+      - https://88a825eb.ngrok.io/github_status?projectId=$GAE_APP_ID
     on_success: always # default: always
     on_failure: never # default: always
     on_start: never   # default: never
