@@ -30,7 +30,7 @@ notifications:
       - https://88a825eb.ngrok.io/github_status
     on_success: always # default: always
     on_failure: never # default: always
-    on_start: change   # default: never
+    on_start: never   # default: never
     on_cancel: never # default: always
     #on_error: always # default: always
 

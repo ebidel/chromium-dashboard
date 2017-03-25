@@ -20,16 +20,6 @@ const fetch = require('node-fetch'); // polyfill
 const exec = require('child_process').exec;
 const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
 
-// fetch('https://88a825eb.ngrok.io/github_status', {
-//   method: 'POST',
-//   body: JSON.stringify({foo: 5})
-// })
-// .then(resp => resp.json())
-// .then(resp => {
-//   console.log(json)
-// });
-// return;
-
 /**
  * Calculates an overall score across all sub audits.
  * @param {!Object} lhResults Lighthouse results object.
