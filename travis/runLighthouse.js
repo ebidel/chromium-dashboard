@@ -15,31 +15,12 @@
  */
 'use strict';
 
-const chalk = require('chalk');
+// const chalk = require('chalk');
 const fetch = require('node-fetch'); // polyfill
-// const exec = require('child_process').exec;
 // const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
 
-// function removeStagedPR(prNum) {
-//   return new Promise((resolve, reject) => {
-//     const GCLOUD_CMD = `${process.env.HOME}/google-cloud-sdk/bin/gcloud`;
-//     const cmd = `${GCLOUD_CMD} app versions delete pr-${prNum}`;
-//     exec(cmd, (err, stdout, stderr) => {
-//       // stdout = stdout.trim();
-//       // stderr = stderr.trim();
-//       if (err) {
-//         console.log(cmd, chalk.red('FAILED'));
-//         reject(err);
-//         return;
-//       }
-//       console.log(chalk.cyan(stdout));
-//       resolve(stdout);
-//     });
-//   });
-// }
-
-// const LH_CI_ENDPOINT = 'https://lighthouse-ci.appspot.com/github_status';
-const LH_CI_ENDPOINT = 'http://88a825eb.ngrok.io/github_status';
+const LH_CI_ENDPOINT = 'https://lighthouse-ci.appspot.com/github_status';
+// const LH_CI_ENDPOINT = 'http://88a825eb.ngrok.io/github_status';
 
 // const args = process.argv.slice(2);
 // const STAGING_URL = args[0];
