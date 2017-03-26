@@ -19,7 +19,7 @@ fi
 
 # Set the AppEngine version for staging
 # VERSION=pr-$TRAVIS_PULL_REQUEST
-VERSION=ci-staging
+VERSION=lighthouse-ci-staging
 
 # Determine staging URL based on PR.
 export STAGING_URL=https://$VERSION-dot-$GAE_APP_ID.appspot.com
