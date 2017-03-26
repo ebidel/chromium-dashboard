@@ -3,12 +3,6 @@ set -e
 
 # Auto-Deploy Pull Request
 
-# If there no githug oauth otken, abort.
-if [ -z "${GITHUB_OAUTH_TOKEN}" ]; then
- echo "Github OAuth token not available."
- exit
-fi
-
 # If this isn't a pull request, abort.
 if [ "${TRAVIS_EVENT_TYPE}" != "pull_request" ]; then
   echo "This only runs on pull_request events. Event was $TRAVIS_EVENT_TYPE."
@@ -21,23 +15,21 @@ if [ "${TRAVIS_TEST_RESULT}" = "1" ]; then
   exit
 fi
 
-# node travis/updateGithubStatus.js pending
-
 ./travis/install_google_cloud_sdk.sh
 
 # Set the AppEngine version for staging
 VERSION=pr-$TRAVIS_PULL_REQUEST
 
-# Show the final staged URL
+# Determine staging URL based on PR.
 STAGED_URL=https://$VERSION-dot-$GAE_APP_ID.appspot.com
-echo Pull Request: $TRAVIS_PULL_REQUEST will be staged at $STAGED_URL
+echo "Pull Request: $TRAVIS_PULL_REQUEST will be staged at $STAGED_URL"
 
 # Deploy to AppEngine
 $HOME/google-cloud-sdk/bin/gcloud app deploy app.yaml -q --no-promote --version $VERSION
 
-# # If App Engine deploy was successful, run Lighthouse.
-# if [ $? -eq 0 ]; then
-#   node travis/runLighthouse.js $STAGED_URL
+# If App Engine deploy was successful, run Lighthouse.
+if [ $? -eq 0 ]; then
+  node travis/runLighthouse.js $STAGED_URL
 # else
-#   node travis/updateGithubStatus.js failure $STAGED_URL
-# fi
+  # node travis/updateGithubStatus.js failure $STAGED_URL
+fi

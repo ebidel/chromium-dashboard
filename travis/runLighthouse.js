@@ -18,70 +18,72 @@
 const chalk = require('chalk');
 const fetch = require('node-fetch'); // polyfill
 const exec = require('child_process').exec;
-const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
+// const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
 
-/**
- * Calculates an overall score across all sub audits.
- * @param {!Object} lhResults Lighthouse results object.
- * @return {!number}
- */
-function getOverallScore(lhResults) {
-  const scoredAggregations = lhResults.aggregations.filter(a => a.scored);
-  const total = scoredAggregations.reduce((sum, aggregation) => {
-    return sum + aggregation.total;
-  }, 0);
-  return Math.round((total / scoredAggregations.length) * 100);
-}
-
-function testOnHeadlessChrome(testUrl) {
-  const builderUrl = 'https://builder-dot-lighthouse-ci.appspot.com/ci' +
-                      `?format=json&url=${testUrl}`;
-  return fetch(builderUrl)
-    .then(resp => resp.json())
-    .then(lhResults => {
-      return getOverallScore(lhResults);
-    }).catch(err => {
-      throw err;
-    });
-}
-
-const GCLOUD_CMD = `${process.env.HOME}/google-cloud-sdk/bin/gcloud`;
-const PR_NUM = parseInt(process.env.TRAVIS_PULL_REQUEST);
-
-function removeStagedPR(prNum) {
-  return new Promise((resolve, reject) => {
-    const cmd = `${GCLOUD_CMD} app versions delete pr-${prNum}`;
-    exec(cmd, (err, stdout, stderr) => {
-      // stdout = stdout.trim();
-      // stderr = stderr.trim();
-      if (err) {
-        console.log(cmd, chalk.red('FAILED'));
-        reject(err);
-        return;
-      }
-      console.log(chalk.cyan(stdout));
-      resolve(stdout);
-    });
-  });
-}
+// function removeStagedPR(prNum) {
+//   return new Promise((resolve, reject) => {
+//     const GCLOUD_CMD = `${process.env.HOME}/google-cloud-sdk/bin/gcloud`;
+//     const cmd = `${GCLOUD_CMD} app versions delete pr-${prNum}`;
+//     exec(cmd, (err, stdout, stderr) => {
+//       // stdout = stdout.trim();
+//       // stderr = stderr.trim();
+//       if (err) {
+//         console.log(cmd, chalk.red('FAILED'));
+//         reject(err);
+//         return;
+//       }
+//       console.log(chalk.cyan(stdout));
+//       resolve(stdout);
+//     });
+//   });
+// }
 
 const args = process.argv.slice(2);
-const stageUrl = args[0];
-const minPassScore = Number(process.env.LH_MIN_PASS_SCORE);
+const stagingUrl = args[0];
+const LH_MIN_PASS_SCORE = process.env.LH_MIN_PASS_SCORE;
+const PR_NUM = process.env.TRAVIS_PULL_REQUEST;
+const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
+const REPO_SLUG = process.env.TRAVIS_PULL_REQUEST_SLUG;
 
-updateGithubStatus('pending', stageUrl)
-  .then(status => testOnHeadlessChrome(stageUrl))
-  .then(score => {
-    if (score < minPassScore) {
-      console.log('Lighthouse score:', chalk.red(score));
-      return updateGithubStatus('failure', stageUrl, score, minPassScore);
-      process.exit(1);
-    }
+// updateGithubStatus('pending', stageUrl)
+//   .then(status => testOnHeadlessChrome(stageUrl))
+//   .then(score => {
+//     if (score < minPassScore) {
+//       console.log('Lighthouse score:', chalk.red(score));
+//       return updateGithubStatus('failure', stageUrl, score, minPassScore);
+//       process.exit(1);
+//     }
 
-    console.log('Lighthouse score:', chalk.green(score));
-    return updateGithubStatus('success', stageUrl, score);
-  })
-  .then(status => removeStagedPR(PR_NUM))
-  .catch(err => {
-    return updateGithubStatus('error');
-  });
+//     console.log('Lighthouse score:', chalk.green(score));
+//     return updateGithubStatus('success', stageUrl, score);
+//   })
+//   .then(status => removeStagedPR(PR_NUM))
+//   .catch(err => {
+//     return updateGithubStatus('error');
+//   });
+
+// const data = new FormData();
+// data.append('payload', JSON.stringify({stageUrl, minPassScore}));
+
+const data = {
+  stagingUrl,
+  minPassScore: Number(LH_MIN_PASS_SCORE),
+  repo: {
+    owner: REPO_SLUG.split('/')[0],
+    name: REPO_SLUG.split('/')[1]
+  },
+  pr: {
+    number: parseInt(PR_NUM),
+    sha: PR_SHA
+  }
+};
+
+fetch('https://88a825eb.ngrok.io/github_status', {
+  method: 'POST',
+  body: JSON.stringify(data),
+  headers: {'Content-Type': 'application/json'}
+})
+  // .then(resp => resp.json())
+  // .then(lhResults => {
+
+  // });
