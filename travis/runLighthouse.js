@@ -17,7 +17,7 @@
 
 const chalk = require('chalk');
 const fetch = require('node-fetch'); // polyfill
-const exec = require('child_process').exec;
+// const exec = require('child_process').exec;
 // const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
 
 // function removeStagedPR(prNum) {
@@ -38,52 +38,56 @@ const exec = require('child_process').exec;
 //   });
 // }
 
+const LH_CI_ENDPOINT = 'https://88a825eb.ngrok.io/github_status';
+
 const args = process.argv.slice(2);
-const stagingUrl = args[0];
+// const STAGING_URL = args[0];
+const STAGING_URL = process.env.STAGING_URL;
 const LH_MIN_PASS_SCORE = process.env.LH_MIN_PASS_SCORE;
 const PR_NUM = process.env.TRAVIS_PULL_REQUEST;
 const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
 const REPO_SLUG = process.env.TRAVIS_PULL_REQUEST_SLUG;
 
-// updateGithubStatus('pending', stageUrl)
-//   .then(status => testOnHeadlessChrome(stageUrl))
-//   .then(score => {
-//     if (score < minPassScore) {
-//       console.log('Lighthouse score:', chalk.red(score));
-//       return updateGithubStatus('failure', stageUrl, score, minPassScore);
-//       process.exit(1);
-//     }
+// function run() {
+//   updateGithubStatus('pending', stageUrl)
+//     .then(status => testOnHeadlessChrome(stageUrl))
+//     .then(score => {
+//       if (score < minPassScore) {
+//         console.log('Lighthouse score:', chalk.red(score));
+//         return updateGithubStatus('failure', stageUrl, score, minPassScore);
+//         process.exit(1);
+//       }
 
-//     console.log('Lighthouse score:', chalk.green(score));
-//     return updateGithubStatus('success', stageUrl, score);
-//   })
-//   .then(status => removeStagedPR(PR_NUM))
-//   .catch(err => {
-//     return updateGithubStatus('error');
-//   });
+//       console.log('Lighthouse score:', chalk.green(score));
+//       return updateGithubStatus('success', stageUrl, score);
+//     })
+//     .then(status => removeStagedPR(PR_NUM))
+//     .catch(err => {
+//       return updateGithubStatus('error');
+//     });
+// }
 
-// const data = new FormData();
-// data.append('payload', JSON.stringify({stageUrl, minPassScore}));
+function run() {
+  const data = {
+    stagingUrl: STAGING_URL,
+    minPassScore: Number(LH_MIN_PASS_SCORE),
+    repo: {
+      owner: REPO_SLUG.split('/')[0],
+      name: REPO_SLUG.split('/')[1]
+    },
+    pr: {
+      number: parseInt(PR_NUM),
+      sha: PR_SHA
+    }
+  };
 
-const data = {
-  stagingUrl,
-  minPassScore: Number(LH_MIN_PASS_SCORE),
-  repo: {
-    owner: REPO_SLUG.split('/')[0],
-    name: REPO_SLUG.split('/')[1]
-  },
-  pr: {
-    number: parseInt(PR_NUM),
-    sha: PR_SHA
-  }
-};
+  fetch(LH_CI_ENDPOINT, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {'Content-Type': 'application/json'}
+  }).catch(err => {
+    process.exit(1);
+  });
+}
 
-fetch('https://88a825eb.ngrok.io/github_status', {
-  method: 'POST',
-  body: JSON.stringify(data),
-  headers: {'Content-Type': 'application/json'}
-})
-  // .then(resp => resp.json())
-  // .then(lhResults => {
-
-  // });
+run();

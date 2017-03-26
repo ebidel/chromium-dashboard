@@ -23,6 +23,7 @@ after_success:
   - export LH_MIN_PASS_SCORE=85
   - export GAE_APP_ID=cr-status
   - ./travis/deploy_pr_gae.sh
+  # - node travis/runLighthouse.js $STAGING_URL
 
 # can't use notifications because there's no way to pass env vars to the endpoint
 # notifications:
