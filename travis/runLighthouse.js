@@ -38,9 +38,9 @@ const fetch = require('node-fetch'); // polyfill
 //   });
 // }
 
-const LH_CI_ENDPOINT = 'https://88a825eb.ngrok.io/github_status';
+const LH_CI_ENDPOINT = 'https://lighthouse-ci.appspot.com/github_status';
 
-const args = process.argv.slice(2);
+// const args = process.argv.slice(2);
 // const STAGING_URL = args[0];
 const STAGING_URL = process.env.STAGING_URL;
 const LH_MIN_PASS_SCORE = process.env.LH_MIN_PASS_SCORE;
