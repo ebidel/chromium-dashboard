@@ -18,7 +18,8 @@ fi
 ./travis/install_google_cloud_sdk.sh
 
 # Set the AppEngine version for staging
-VERSION=pr-$TRAVIS_PULL_REQUEST
+# VERSION=pr-$TRAVIS_PULL_REQUEST
+VERSION=ci-staging
 
 # Determine staging URL based on PR.
 export STAGING_URL=https://$VERSION-dot-$GAE_APP_ID.appspot.com
