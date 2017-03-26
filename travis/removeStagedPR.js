@@ -37,4 +37,4 @@ function removeStagedPR(prNum) {
   });
 }
 
-removeStagedPR();
+exports.removeStagedPR = removeStagedPR;

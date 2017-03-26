@@ -18,9 +18,9 @@
 // const chalk = require('chalk');
 const fetch = require('node-fetch'); // polyfill
 // const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
+// const removeStagedPR = require('./removeStagedPR.js').updateremoveStagedPRGithubStatus;
 
-const LH_CI_ENDPOINT = 'https://lighthouse-ci.appspot.com/github_status';
-// const LH_CI_ENDPOINT = 'http://88a825eb.ngrok.io/github_status';
+const CI_HOST = 'https://ed259c7f.ngrok.io'; // https://lighthouse-ci.appspot.com
 
 // const args = process.argv.slice(2);
 // const STAGING_URL = args[0];
@@ -30,46 +30,52 @@ const PR_NUM = process.env.TRAVIS_PULL_REQUEST;
 const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
 const REPO_SLUG = process.env.TRAVIS_PULL_REQUEST_SLUG;
 
-// function run() {
-//   updateGithubStatus('pending', stageUrl)
-//     .then(status => testOnHeadlessChrome(stageUrl))
-//     .then(score => {
-//       if (score < minPassScore) {
-//         console.log('Lighthouse score:', chalk.red(score));
-//         return updateGithubStatus('failure', stageUrl, score, minPassScore);
-//         process.exit(1);
-//       }
+const postData = {
+  testUrl: STAGING_URL,
+  minPassScore: Number(LH_MIN_PASS_SCORE),
+  repo: {
+    owner: REPO_SLUG.split('/')[0],
+    name: REPO_SLUG.split('/')[1]
+  },
+  pr: {
+    number: parseInt(PR_NUM, 10),
+    sha: PR_SHA
+  }
+};
 
-//       console.log('Lighthouse score:', chalk.green(score));
-//       return updateGithubStatus('success', stageUrl, score);
-//     })
-//     .then(status => removeStagedPR(PR_NUM))
-//     .catch(err => {
-//       return updateGithubStatus('error');
-//     });
-// }
+function runOnHeadlessChrome() {
+  fetch(`${CI_HOST}/run_on_chrome`, {
+    method: 'POST',
+    body: JSON.stringify(Object.assign({format: 'json'}, postData)),
+    headers: {'Content-Type': 'application/json'}
+  }).catch(err => {
+    console.log(err);
+    process.exit(1);
+  });
+}
 
-function run() {
+function runOnWebpageTest() {
   const data = {
-    stagingUrl: STAGING_URL,
+    testUrl: STAGING_URL,
     minPassScore: Number(LH_MIN_PASS_SCORE),
     repo: {
       owner: REPO_SLUG.split('/')[0],
       name: REPO_SLUG.split('/')[1]
     },
     pr: {
-      number: parseInt(PR_NUM),
+      number: parseInt(PR_NUM, 10),
       sha: PR_SHA
     }
   };
 
-  fetch(LH_CI_ENDPOINT, {
+  fetch(`${CI_HOST}/run_on_wpt`, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {'Content-Type': 'application/json'}
   }).catch(err => {
+    console.log(err);
     process.exit(1);
   });
 }
 
-run();
+runOnHeadlessChrome();
