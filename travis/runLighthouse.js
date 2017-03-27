@@ -20,8 +20,6 @@ const fetch = require('node-fetch'); // polyfill
 // const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
 // const removeStagedPR = require('./removeStagedPR.js').updateremoveStagedPRGithubStatus;
 
-const CI_HOST = 'https://ed259c7f.ngrok.io'; // https://lighthouse-ci.appspot.com
-
 // const args = process.argv.slice(2);
 // const STAGING_URL = args[0];
 const STAGING_URL = process.env.STAGING_URL;
@@ -30,31 +28,13 @@ const PR_NUM = process.env.TRAVIS_PULL_REQUEST;
 const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
 const REPO_SLUG = process.env.TRAVIS_PULL_REQUEST_SLUG;
 
-const postData = {
-  testUrl: STAGING_URL,
-  minPassScore: Number(LH_MIN_PASS_SCORE),
-  repo: {
-    owner: REPO_SLUG.split('/')[0],
-    name: REPO_SLUG.split('/')[1]
-  },
-  pr: {
-    number: parseInt(PR_NUM, 10),
-    sha: PR_SHA
-  }
-};
+const CI_HOST = 'https://lighthouse-ci.appspot.com';
+const RUNNERS = {chrome: 'chrome', wpt: 'wpt'};
 
-function runOnHeadlessChrome() {
-  fetch(`${CI_HOST}/run_on_chrome`, {
-    method: 'POST',
-    body: JSON.stringify(Object.assign({format: 'json'}, postData)),
-    headers: {'Content-Type': 'application/json'}
-  }).catch(err => {
-    console.log(err);
-    process.exit(1);
-  });
-}
-
-function runOnWebpageTest() {
+/**
+ * @param {!string} runner Where to run Lighthouse.
+ */
+function run(runner) {
   const data = {
     testUrl: STAGING_URL,
     minPassScore: Number(LH_MIN_PASS_SCORE),
@@ -68,9 +48,22 @@ function runOnWebpageTest() {
     }
   };
 
-  fetch(`${CI_HOST}/run_on_wpt`, {
+  let endpoint;
+  let body = JSON.stringify(data);
+
+  switch (runner) {
+    case RUNNERS.wpt:
+      endpoint = `${CI_HOST}/run_on_wpt`;
+      break;
+    case RUNNERS.chrome: // same as default
+    default:
+      endpoint = `${CI_HOST}/run_on_chrome`;
+      body = JSON.stringify(Object.assign({format: 'json'}, data));
+  }
+
+  fetch(endpoint, {
     method: 'POST',
-    body: JSON.stringify(data),
+    body,
     headers: {'Content-Type': 'application/json'}
   }).catch(err => {
     console.log(err);
@@ -78,4 +71,4 @@ function runOnWebpageTest() {
   });
 }
 
-runOnHeadlessChrome();
+run(RUNNERS.chrome);
