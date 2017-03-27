@@ -21,8 +21,8 @@ const fetch = require('node-fetch'); // polyfill
 // const removeStagedPR = require('./removeStagedPR.js').updateremoveStagedPRGithubStatus;
 
 // const args = process.argv.slice(2);
-// const STAGING_URL = args[0];
-const STAGING_URL = process.env.STAGING_URL;
+// const LH_TEST_URL = args[0];
+const LH_TEST_URL = process.env.LH_TEST_URL;
 const LH_MIN_PASS_SCORE = process.env.LH_MIN_PASS_SCORE;
 const PR_NUM = process.env.TRAVIS_PULL_REQUEST;
 const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
@@ -36,7 +36,7 @@ const RUNNERS = {chrome: 'chrome', wpt: 'wpt'};
  */
 function run(runner) {
   const data = {
-    testUrl: STAGING_URL,
+    testUrl: LH_TEST_URL,
     minPassScore: Number(LH_MIN_PASS_SCORE),
     repo: {
       owner: REPO_SLUG.split('/')[0],

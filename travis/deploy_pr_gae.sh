@@ -22,16 +22,16 @@ fi
 VERSION=lighthouse-ci-staging
 
 # Determine staging URL based on PR.
-export STAGING_URL=https://$VERSION-dot-$GAE_APP_ID.appspot.com
-echo "Pull Request: $TRAVIS_PULL_REQUEST will be staged at $STAGING_URL"
+export LH_TEST_URL=https://$VERSION-dot-$GAE_APP_ID.appspot.com
+echo "Pull Request: $TRAVIS_PULL_REQUEST will be staged at $LH_TEST_URL"
 
 # Deploy to AppEngine
 $HOME/google-cloud-sdk/bin/gcloud app deploy app.yaml -q --no-promote --version $VERSION
 
 # If App Engine deploy was successful, run Lighthouse.
 if [ $? -eq 0 ]; then
-  # node travis/runLighthouse.js $STAGING_URL
+  # node travis/runLighthouse.js $LH_TEST_URL
   node travis/runLighthouse.js
 # else
-  # node travis/updateGithubStatus.js failure $STAGING_URL
+  # node travis/updateGithubStatus.js failure $LH_TEST_URL
 fi
