@@ -65,12 +65,16 @@ function run(runner) {
     body,
     headers: {'Content-Type': 'application/json'}
   })
-  .then(resp => resp.text())
-  .then(text => {
-    console.log(chalk.cyan(text));
+  .then(resp => resp.json())
+  .then(json => {
+    if (LH_MIN_PASS_SCORE <= json.score) {
+      console.log(chalk.red('Lighthouse CI score:'), json.score);
+    } else {
+      console.log(chalk.green('Lighthouse CI score:'), json.score);
+    }
   })
   .catch(err => {
-    console.log(chalk.red('Lighthouse run failed'), err);
+    console.log(chalk.red('Lighthouse CI failed'), err);
     process.exit(1);
   });
 }
