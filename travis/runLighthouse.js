@@ -20,10 +20,9 @@ const fetch = require('node-fetch'); // polyfill
 // const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
 // const removeStagedPR = require('./removeStagedPR.js').updateremoveStagedPRGithubStatus;
 
-// const args = process.argv.slice(2);
-// const LH_TEST_URL = args[0];
-const LH_TEST_URL = process.env.LH_TEST_URL;
-const LH_MIN_PASS_SCORE = process.env.LH_MIN_PASS_SCORE;
+const args = process.argv.slice(2);
+const LH_TEST_URL = args[0];
+const LH_MIN_PASS_SCORE = args[1];
 const PR_NUM = process.env.TRAVIS_PULL_REQUEST;
 const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
 const REPO_SLUG = process.env.TRAVIS_PULL_REQUEST_SLUG;
