@@ -24,31 +24,7 @@ after_success:
   - export LH_MIN_PASS_SCORE=93
   - export LH_TEST_URL=https://lighthouse-ci-staging-dot-cr-status.appspot.com
   - ./travis/deploy_pr_gae.sh
-  # - node travis/runLighthouse.js $LH_TEST_URL
-
-# can't use notifications because there's no way to pass env vars to the endpoint
-# notifications:
-#   webhooks:
-#     urls:
-#       - https://88a825eb.ngrok.io/github_status
-#     on_success: always # default: always
-#     on_failure: never # default: always
-#     on_start: never   # default: never
-#     on_cancel: never # default: always
-#     #on_error: always # default: always
-
-# Ideally we could use deploy, provider: gae, builds triggered from pull requests never
-# trigger a deploy. https://docs.travis-ci.com/user/deployment/google-app-engine/
-# deploy:
-#  provider: gae
-#  config: app.yaml
-#  keyfile: gcloud-client-secret.json
-#  project: $GAE_APP_ID
-#  #on:
-#  #  all_branches: true
-#  #  condition: $MY_ENV = super_awesome
-#  version: staging
-#  no_promote: true
-#  skip_cleanup: true
-# # after_deploy:
-# #   # TODO
+  # # If deploy was successful, run Lighthouse.
+  - if [ $? -eq 0 ]; then
+      node travis/runLighthouse.js
+    fi
