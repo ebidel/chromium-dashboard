@@ -22,8 +22,11 @@ fi
 VERSION=lighthouse-ci-staging
 
 # Determine staging URL based on PR.
-export LH_TEST_URL=https://$VERSION-dot-$GAE_APP_ID.appspot.com
+export LH_TEST_URL=https://$VERSION-dot-$GAE_APP_ID.appspot.com/features
 echo "Pull Request: $TRAVIS_PULL_REQUEST will be staged at $LH_TEST_URL"
 
 # Deploy to AppEngine
 $HOME/google-cloud-sdk/bin/gcloud app deploy app.yaml -q --no-promote --version $VERSION
+
+# Make sure an AppEngine instance has started.
+curl $LH_TEST_URL
