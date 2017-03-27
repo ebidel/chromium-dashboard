@@ -15,7 +15,7 @@
  */
 'use strict';
 
-// const chalk = require('chalk');
+const chalk = require('chalk');
 const fetch = require('node-fetch'); // polyfill
 // const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
 // const removeStagedPR = require('./removeStagedPR.js').updateremoveStagedPRGithubStatus;
@@ -64,8 +64,13 @@ function run(runner) {
     method: 'POST',
     body,
     headers: {'Content-Type': 'application/json'}
-  }).catch(err => {
-    console.log(err);
+  })
+  .then(resp => resp.text())
+  .then(text => {
+    console.log(chalk.cyan(text));
+  })
+  .catch(err => {
+    console.log(chalk.red('Lighthouse run failed'), err);
     process.exit(1);
   });
 }

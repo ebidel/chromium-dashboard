@@ -17,11 +17,10 @@ install:
   - npm install
   - npm --prefix ./travis install ./travis
 script:
-  # - npm run build
   - npm run lint
-  # - npm run test
+  - npm run build
 after_success:
+  - ./travis/deploy_pr_gae.sh
   - export LH_MIN_PASS_SCORE=93
   - export LH_TEST_URL=https://lighthouse-ci-staging-dot-cr-status.appspot.com
-  - ./travis/deploy_pr_gae.sh
   - node travis/runLighthouse.js $LH_TEST_URL $LH_MIN_PASS_SCORE
