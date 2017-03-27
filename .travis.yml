@@ -24,5 +24,4 @@ after_success:
   - export LH_MIN_PASS_SCORE=93
   - export LH_TEST_URL=https://lighthouse-ci-staging-dot-cr-status.appspot.com
   - ./travis/deploy_pr_gae.sh
-  # Run Lighthouse if deploy (last command) was successful.
-  - if [ $? -eq 0 ]; then node travis/runLighthouse.js; fi
+  - node travis/runLighthouse.js
