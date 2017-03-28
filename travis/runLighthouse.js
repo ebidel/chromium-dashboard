@@ -67,11 +67,11 @@ function run(runner) {
   })
   .then(resp => resp.json())
   .then(json => {
-    if (LH_MIN_PASS_SCORE <= json.score) {
-      console.log(chalk.red('Lighthouse CI score:'), json.score);
-    } else {
-      console.log(chalk.green('Lighthouse CI score:'), json.score);
+    let colorize = chalk.green;
+    if (json.score < LH_MIN_PASS_SCORE) {
+      colorize = chalk.red;
     }
+    console.log(colorize('Lighthouse CI score:'), json.score);
   })
   .catch(err => {
     console.log(chalk.red('Lighthouse CI failed'), err);
