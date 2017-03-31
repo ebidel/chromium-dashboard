@@ -29,8 +29,7 @@ const REPO_SLUG = process.env.TRAVIS_PULL_REQUEST_SLUG;
 
 const API_KEY = process.env.API_KEY;
 
-// const CI_HOST = 'https://lighthouse-ci.appspot.com';
-const CI_HOST = 'https://f45fd269.ngrok.io';
+const CI_HOST = 'https://lighthouse-ci.appspot.com';
 const RUNNERS = {chrome: 'chrome', wpt: 'wpt'};
 
 /**
