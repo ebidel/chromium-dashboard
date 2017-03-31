@@ -29,8 +29,7 @@ const REPO_SLUG = process.env.TRAVIS_PULL_REQUEST_SLUG;
 
 const API_KEY = process.env.API_KEY;
 
-// const CI_HOST = 'https://lighthouse-ci.appspot.com';
-const CI_HOST = 'https://c8f75266.ngrok.io';
+const CI_HOST = 'https://lighthouse-ci.appspot.com';
 const RUNNERS = {chrome: 'chrome', wpt: 'wpt'};
 
 /**
@@ -73,7 +72,6 @@ function run(runner) {
   })
   .then(resp => resp.json())
   .then(json => {
-console.log(json)
     let colorize = chalk.green;
     if (json.score < LH_MIN_PASS_SCORE) {
       colorize = chalk.red;
