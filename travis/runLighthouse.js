@@ -27,7 +27,10 @@ const PR_NUM = process.env.TRAVIS_PULL_REQUEST;
 const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
 const REPO_SLUG = process.env.TRAVIS_PULL_REQUEST_SLUG;
 
-const CI_HOST = 'https://lighthouse-ci.appspot.com';
+const API_KEY = process.env.API_KEY;
+
+// const CI_HOST = 'https://lighthouse-ci.appspot.com';
+const CI_HOST = 'https://f45fd269.ngrok.io';
 const RUNNERS = {chrome: 'chrome', wpt: 'wpt'};
 
 /**
@@ -63,7 +66,10 @@ function run(runner) {
   fetch(endpoint, {
     method: 'POST',
     body,
-    headers: {'Content-Type': 'application/json'}
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-KEY': API_KEY // Keep usage tight for now.
+    }
   })
   .then(resp => resp.json())
   .then(json => {
