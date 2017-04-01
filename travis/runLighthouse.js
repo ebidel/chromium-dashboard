@@ -27,9 +27,8 @@ const PR_NUM = process.env.TRAVIS_PULL_REQUEST;
 const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
 const REPO_SLUG = process.env.TRAVIS_PULL_REQUEST_SLUG;
 
-const API_KEY = process.env.API_KEY;
-
 const CI_HOST = 'https://lighthouse-ci.appspot.com';
+const API_KEY = process.env.API_KEY;
 const RUNNERS = {chrome: 'chrome', wpt: 'wpt'};
 
 /**
@@ -84,4 +83,9 @@ function run(runner) {
   });
 }
 
-run(RUNNERS.chrome);
+// Run LH if this is a PR.
+if (process.env.TRAVIS_EVENT_TYPE === 'pull_request') {
+  run(RUNNERS.wpt);
+} else {
+  console.log('Lighthouse not run for non-PR commits');
+}
