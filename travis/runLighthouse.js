@@ -71,6 +71,12 @@ function run(runner) {
   })
   .then(resp => resp.json())
   .then(json => {
+    if (runner === RUNNERS.wpt) {
+      console.log(chalk.green(
+          `Started Lighthouse run on WebPageTest: ${json.data.userUrl}`));
+      return;
+    }
+
     let colorize = chalk.green;
     if (json.score < LH_MIN_PASS_SCORE) {
       colorize = chalk.red;
