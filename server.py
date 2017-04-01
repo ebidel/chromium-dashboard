@@ -18,6 +18,7 @@ __author__ = 'ericbidelman@chromium.org (Eric Bidelman)'
 import json
 import logging
 import os
+import time
 import webapp2
 
 from google.appengine.api import memcache
@@ -263,9 +264,32 @@ class FeaturesAPIHandler(common.JSONHandler):
     return common.JSONHandler.get(self, feature_list, formatted=True)
 
 
+class DelayHandler(common.ContentHandler):
+
+  def get(self):
+    delay = self.request.get('delay') or 0
+    url = self.request.get('url')
+
+    if url is None:
+      return self.response.write('No URL')
+
+    time.sleep(int(delay))
+
+    result = urlfetch.fetch(url)
+    if result.status_code == 200:
+      if url.endswith('.js'):
+        self.response.headers.add_header('Content-Type', 'application/json')
+      elif url.endswith('.css'):
+        self.response.headers.add_header('Content-Type', 'text/css')
+      self.response.write(result.content)
+    else:
+      self.abort(500)
+
+
 # Main URL routes.
 routes = [
   (r'/features(?:_v(\d+))?.json', FeaturesAPIHandler),
+  ('/delay', DelayHandler),
   ('/(.*)/([0-9]*)', MainHandler),
   ('/(.*)', MainHandler),
 ]
