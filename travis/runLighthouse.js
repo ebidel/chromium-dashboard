@@ -73,7 +73,7 @@ function run(runner) {
   .then(json => {
     if (runner === RUNNERS.wpt) {
       console.log(chalk.green(
-          `Started Lighthouse run on WebPageTest: ${json.data.userUrl}`));
+          `Started Lighthouse run on WebPageTest: ${json.data.target_url}`));
       return;
     }
 
