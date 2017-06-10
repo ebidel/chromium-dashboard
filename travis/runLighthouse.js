@@ -17,49 +17,75 @@
 
 const chalk = require('chalk');
 const fetch = require('node-fetch'); // polyfill
-
-const args = process.argv.slice(2);
-const LH_TEST_URL = args[0];
-const LH_MIN_PASS_SCORE = args[1];
-const PR_NUM = process.env.TRAVIS_PULL_REQUEST;
-const PR_SHA = process.env.TRAVIS_PULL_REQUEST_SHA;
-const REPO_SLUG = process.env.TRAVIS_PULL_REQUEST_SLUG;
+const minimist = require('minimist');
 
 const CI_HOST = process.env.CI_HOST || 'https://lighthouse-ci.appspot.com';
 const API_KEY = process.env.API_KEY;
-const RUNNERS = {chrome: 'chrome', wpt: 'wpt', ghComment: 'comment'};
+const RUNNERS = {chrome: 'chrome', wpt: 'wpt', comment: 'comment'};
 
-/**
- * @param {!string} runner Where to run Lighthouse.
- */
-function run(runner) {
-  const data = {
-    testUrl: LH_TEST_URL,
-    minPassScore: Number(LH_MIN_PASS_SCORE),
-    repo: {
-      owner: REPO_SLUG.split('/')[0],
-      name: REPO_SLUG.split('/')[1]
-    },
-    pr: {
-      number: parseInt(PR_NUM, 10),
-      sha: PR_SHA
-    }
+function printUsageAndExit() {
+  console.log(`usage: runLighthouse.js --score=<score> [--runner=${Object.keys(RUNNERS)}] <url>`);
+  console.log('example: runLighthouse.js --score=96 https://example.com');
+  process.exit(1);
+}
+
+function getConfig() {
+  const args = process.argv.slice(2);
+  const argv = minimist(args);
+  const flags = {};
+
+  flags.testUrl = argv._[0];
+  if (!flags.testUrl) {
+    console.log(chalk.red('Please provide a url to test.'));
+    printUsageAndExit();
+  }
+
+  flags.minPassScore = Number(argv['min-score']);
+  if (!flags.minPassScore) {
+    console.log(chalk.red('Please provide minimum "passing" Lighthouse score.'));
+    printUsageAndExit();
+  }
+
+  flags.runner = argv['runner'] || RUNNERS.chrome;
+  const possibleRunners = Object.keys(RUNNERS);
+  if (!possibleRunners.includes(flags.runner)) {
+    console.log(chalk.red(`Unknown runner "${flags.runner}". Options: ${possibleRunners}`));
+    printUsageAndExit();
+  }
+  console.log(chalk.yellow(`Using runner: ${flags.runner}`));
+
+  flags.pr = {
+    number: parseInt(process.env.TRAVIS_PULL_REQUEST, 10),
+    sha: process.env.TRAVIS_PULL_REQUEST_SHA,
   };
 
+  const repoSlug = process.env.TRAVIS_PULL_REQUEST_SLUG;
+  flags.repo = {
+    owner: repoSlug.split('/')[0],
+    name: repoSlug.split('/')[1]
+  };
+
+  return flags;
+}
+
+/**
+ * @param {!Object} Config settings to run the Lighthouse CI.
+ */
+function run(config) {
   let endpoint;
-  let body = JSON.stringify(data);
+  let body = JSON.stringify(config);
 
   switch (runner) {
     case RUNNERS.wpt:
       endpoint = `${CI_HOST}/run_on_wpt`;
       break;
-    case RUNNERS.ghComment:
+    case RUNNERS.comment:
       endpoint = `${CI_HOST}/add_github_comment`;
       break;
     case RUNNERS.chrome: // same as default
     default:
       endpoint = `${CI_HOST}/run_on_chrome`;
-      body = JSON.stringify(Object.assign({format: 'json'}, data));
+      body = JSON.stringify(Object.assign({format: 'json'}, config));
   }
 
   fetch(endpoint, {
@@ -79,7 +105,7 @@ function run(runner) {
     }
 
     let colorize = chalk.green;
-    if (json.score < LH_MIN_PASS_SCORE) {
+    if (json.score < config.minPassScore) {
       colorize = chalk.red;
     }
     console.log(colorize('Lighthouse CI score:'), json.score);
@@ -91,8 +117,9 @@ function run(runner) {
 }
 
 // Run LH if this is a PR.
+const config = getConfig();
 if (process.env.TRAVIS_EVENT_TYPE === 'pull_request') {
-  run(RUNNERS.ghComment);
+  run(config);
 } else {
   console.log('Lighthouse is not run for non-PR commits.');
 }
