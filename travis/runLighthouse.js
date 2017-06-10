@@ -75,7 +75,7 @@ function run(config) {
   let endpoint;
   let body = JSON.stringify(config);
 
-  switch (runner) {
+  switch (config.runner) {
     case RUNNERS.wpt:
       endpoint = `${CI_HOST}/run_on_wpt`;
       break;
@@ -98,7 +98,7 @@ function run(config) {
   })
   .then(resp => resp.json())
   .then(json => {
-    if (runner === RUNNERS.wpt) {
+    if (config.runner === RUNNERS.wpt) {
       console.log(chalk.green(
           `Started Lighthouse run on WebPageTest: ${json.data.target_url}`));
       return;
