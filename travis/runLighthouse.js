@@ -17,8 +17,6 @@
 
 const chalk = require('chalk');
 const fetch = require('node-fetch'); // polyfill
-// const updateGithubStatus = require('./updateGithubStatus.js').updateGithubStatus;
-// const removeStagedPR = require('./removeStagedPR.js').updateremoveStagedPRGithubStatus;
 
 const args = process.argv.slice(2);
 const LH_TEST_URL = args[0];
@@ -29,7 +27,7 @@ const REPO_SLUG = process.env.TRAVIS_PULL_REQUEST_SLUG;
 
 const CI_HOST = process.env.CI_HOST || 'https://lighthouse-ci.appspot.com';
 const API_KEY = process.env.API_KEY;
-const RUNNERS = {chrome: 'chrome', wpt: 'wpt'};
+const RUNNERS = {chrome: 'chrome', wpt: 'wpt', ghComment: 'comment'};
 
 /**
  * @param {!string} runner Where to run Lighthouse.
@@ -54,6 +52,9 @@ function run(runner) {
   switch (runner) {
     case RUNNERS.wpt:
       endpoint = `${CI_HOST}/run_on_wpt`;
+      break;
+    case RUNNERS.justComment:
+      endpoint = `${CI_HOST}/add_github_comment`;
       break;
     case RUNNERS.chrome: // same as default
     default:
@@ -91,7 +92,7 @@ function run(runner) {
 
 // Run LH if this is a PR.
 if (process.env.TRAVIS_EVENT_TYPE === 'pull_request') {
-  run(RUNNERS.chrome);
+  run(RUNNERS.ghComment);
 } else {
-  console.log('Lighthouse not run for non-PR commits');
+  console.log('Lighthouse is not run for non-PR commits.');
 }
