@@ -40,7 +40,7 @@ function getConfig() {
     printUsageAndExit();
   }
 
-  flags.minPassScore = Number(argv['min-score']);
+  flags.minPassScore = Number(argv['score']);
   if (!flags.minPassScore) {
     console.log(chalk.red('Please provide minimum "passing" Lighthouse score.'));
     printUsageAndExit();
