@@ -53,7 +53,7 @@ function run(runner) {
     case RUNNERS.wpt:
       endpoint = `${CI_HOST}/run_on_wpt`;
       break;
-    case RUNNERS.justComment:
+    case RUNNERS.ghComment:
       endpoint = `${CI_HOST}/add_github_comment`;
       break;
     case RUNNERS.chrome: // same as default
