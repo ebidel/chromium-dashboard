@@ -30,7 +30,7 @@ Options:
   --score      Minimum score for the pull request to be considered "passing".
                If omitted, merging the PR will be allowed no matter what the score. [Number]
 
-  --no-comment Does not post a comment to the PR which summarizes the Lighthouse results. [Boolean]
+  --no-comment Doesn't post a comment to the PR issue summarizing the Lighthouse results. [Boolean]
 
   --runner     Selects Lighthouse running on Chrome or WebPageTest. [--runner=${Object.keys(RUNNERS)}]
 
