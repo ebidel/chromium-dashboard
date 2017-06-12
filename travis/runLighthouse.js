@@ -21,55 +21,91 @@ const minimist = require('minimist');
 
 const CI_HOST = process.env.CI_HOST || 'https://lighthouse-ci.appspot.com';
 const API_KEY = process.env.API_KEY;
-const RUNNERS = {chrome: 'chrome', wpt: 'wpt', comment: 'comment'};
+const RUNNERS = {chrome: 'chrome', wpt: 'wpt'};
 
 function printUsageAndExit() {
-  console.log(`usage: runLighthouse.js --score=<score> [--runner=${Object.keys(RUNNERS)}] <url>`);
-  console.log('example: runLighthouse.js --score=96 https://example.com');
+  const usage = `Usage:
+runLighthouse.js [--score=<score>] [--no-comment] [--runner=${Object.keys(RUNNERS)}] <url>
+
+Options:
+  --score      Minimum score for the pull request to be considered "passing".
+               If omitted, merging the PR will be allowed no matter what the score. [Number]
+
+  --no-comment Does not post a comment to the PR which summarizes the Lighthouse results. [Boolean]
+
+  --runner     Selects Lighthouse running on Chrome or WebPageTest. [--runner=${Object.keys(RUNNERS)}]
+
+  --help       Prints help.
+
+Examples:
+
+  Runs Lighthouse and posts a summary of the results.
+    runLighthouse.js https://example.com
+
+  Fails the PR if the score drops below 93. Posts the summary comment.
+    runLighthouse.js --score=93 https://example.com
+
+  Runs Lighthouse on WebPageTest. Fails the PR if the score drops below 93.
+    runLighthouse.js --score=93 --runner=wpt --no-comment https://example.com`;
+
+  console.log(usage);
   process.exit(1);
 }
 
+/**
+ * Collects command lines flags and creates settings to run LH CI.
+ * @return {!Object} Settings object.
+ */
 function getConfig() {
   const args = process.argv.slice(2);
-  const argv = minimist(args);
-  const flags = {};
+  const argv = minimist(args, {
+    boolean: ['comment', 'help'],
+    default: {comment: true},
+    alias: {help: 'h'}
+  });
+  const config = {};
 
-  flags.testUrl = argv._[0];
-  if (!flags.testUrl) {
+  if (argv.help) {
+    printUsageAndExit();
+  }
+
+  config.testUrl = argv._[0];
+  if (!config.testUrl) {
     console.log(chalk.red('Please provide a url to test.'));
     printUsageAndExit();
   }
 
-  flags.minPassScore = Number(argv['score']);
-  if (!flags.minPassScore) {
-    console.log(chalk.red('Please provide minimum "passing" Lighthouse score.'));
+  config.addComment = argv.comment;
+  config.minPassScore = Number(argv.score);
+  if (!config.addComment && !config.minPassScore) {
+    console.log(chalk.red('Please provide a --score when using --no-comment.'));
     printUsageAndExit();
   }
 
-  flags.runner = argv['runner'] || RUNNERS.chrome;
+  config.runner = argv.runner || RUNNERS.chrome;
   const possibleRunners = Object.keys(RUNNERS);
-  if (!possibleRunners.includes(flags.runner)) {
-    console.log(chalk.red(`Unknown runner "${flags.runner}". Options: ${possibleRunners}`));
+  if (!possibleRunners.includes(config.runner)) {
+    console.log(chalk.red(`Unknown runner "${config.runner}". Options: ${possibleRunners}`));
     printUsageAndExit();
   }
-  console.log(chalk.yellow(`Using runner: ${flags.runner}`));
+  console.log(chalk.yellow(`Using runner: ${config.runner}`));
 
-  flags.pr = {
+  config.pr = {
     number: parseInt(process.env.TRAVIS_PULL_REQUEST, 10),
-    sha: process.env.TRAVIS_PULL_REQUEST_SHA,
+    sha: process.env.TRAVIS_PULL_REQUEST_SHA
   };
 
   const repoSlug = process.env.TRAVIS_PULL_REQUEST_SLUG;
-  flags.repo = {
+  config.repo = {
     owner: repoSlug.split('/')[0],
     name: repoSlug.split('/')[1]
   };
 
-  return flags;
+  return config;
 }
 
 /**
- * @param {!Object} Config settings to run the Lighthouse CI.
+ * @param {!Object} config Settings to run the Lighthouse CI.
  */
 function run(config) {
   let endpoint;
@@ -78,9 +114,6 @@ function run(config) {
   switch (config.runner) {
     case RUNNERS.wpt:
       endpoint = `${CI_HOST}/run_on_wpt`;
-      break;
-    case RUNNERS.comment:
-      endpoint = `${CI_HOST}/add_github_comment`;
       break;
     case RUNNERS.chrome: // same as default
     default:
