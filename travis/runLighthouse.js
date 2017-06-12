@@ -15,7 +15,6 @@
  */
 'use strict';
 
-const chalk = require('chalk');
 const fetch = require('node-fetch'); // polyfill
 const minimist = require('minimist');
 
@@ -71,24 +70,25 @@ function getConfig() {
 
   config.testUrl = argv._[0];
   if (!config.testUrl) {
-    console.log(chalk.red('Please provide a url to test.'));
+    console.log('Please provide a url to test.');
     printUsageAndExit();
   }
 
   config.addComment = argv.comment;
   config.minPassScore = Number(argv.score);
   if (!config.addComment && !config.minPassScore) {
-    console.log(chalk.red('Please provide a --score when using --no-comment.'));
+    console.log('Please provide a --score when using --no-comment.');
     printUsageAndExit();
   }
 
   config.runner = argv.runner || RUNNERS.chrome;
   const possibleRunners = Object.keys(RUNNERS);
   if (!possibleRunners.includes(config.runner)) {
-    console.log(chalk.red(`Unknown runner "${config.runner}". Options: ${possibleRunners}`));
+    console.log(
+        `Unknown runner "${config.runner}". Options: ${possibleRunners}`);
     printUsageAndExit();
   }
-  console.log(chalk.yellow(`Using runner: ${config.runner}`));
+  console.log(`Using runner: ${config.runner}`);
 
   config.pr = {
     number: parseInt(process.env.TRAVIS_PULL_REQUEST, 10),
@@ -132,19 +132,14 @@ function run(config) {
   .then(resp => resp.json())
   .then(json => {
     if (config.runner === RUNNERS.wpt) {
-      console.log(chalk.green(
-          `Started Lighthouse run on WebPageTest: ${json.data.target_url}`));
+      console.log(
+          `Started Lighthouse run on WebPageTest: ${json.data.target_url}`);
       return;
     }
-
-    let colorize = chalk.green;
-    if (json.score < config.minPassScore) {
-      colorize = chalk.red;
-    }
-    console.log(colorize('Lighthouse CI score:'), json.score);
+    console.log('Lighthouse CI score:', json.score);
   })
   .catch(err => {
-    console.log(chalk.red('Lighthouse CI failed'), err);
+    console.log('Lighthouse CI failed', err);
     process.exit(1);
   });
 }
