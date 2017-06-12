@@ -24,4 +24,4 @@ after_success:
   - ./travis/deploy_pr_gae.sh
   - export LH_MIN_PASS_SCORE=96
   - export LH_TEST_URL=https://lighthouse-ci-staging-dot-cr-status.appspot.com/features
-  - node travis/runLighthouse.js --score=$LH_MIN_PASS_SCORE --runner=comment $LH_TEST_URL
+  - node travis/runLighthouse.js --score=$LH_MIN_PASS_SCORE $LH_TEST_URL
