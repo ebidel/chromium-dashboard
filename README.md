@@ -1,5 +1,6 @@
 Chrome Platform Status
 ==================
+<iframe src="http://example.com/"></iframe>
 
 [chromestatus.com](http://chromestatus.com/)
 
