@@ -11,7 +11,8 @@
     "deps": "rm -rf static/bower_components; bower install",
     "lint": "gulp lint",
     "build": "gulp",
-    "deploy": "./scripts/deploy_site.sh"
+    "deploy": "./scripts/deploy_site.sh",
+    "lh": "lighthouse-ci"
   },
   "repository": {
     "type": "git",
@@ -43,7 +44,7 @@
     "gulp-util": "^3.0.7",
     "gulp-vulcanize": "^6.1.0",
     "http2-push-manifest": "^1.0.0",
-    "lighthouse-ci": "git+https://github.com/ebidel/lighthouse-ci.git",
+    "lighthouse-ci": "https://github.com/ebidel/lighthouse-ci",
     "load-grunt-tasks": "^3.4.1",
     "run-sequence": "^1.2.2",
     "sw-precache": "^3.2.0",
