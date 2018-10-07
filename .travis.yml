@@ -20,6 +20,6 @@ script:
   - npm run build
 after_success:
   - ./travis/deploy_pr_gae.sh
-  - export LH_MIN_PASS_SCORE=96
+  - export LH_MIN_PASS_PERF_SCORE=96
   - export LH_TEST_URL=https://lighthouse-ci-staging-dot-cr-status.appspot.com/features
-  - npm run lh -- --score=$LH_MIN_PASS_SCORE $LH_TEST_URL
+  - npm run lh -- --perf=$LH_MIN_PASS_PERF_SCORE --pwa=100 $LH_TEST_URL
