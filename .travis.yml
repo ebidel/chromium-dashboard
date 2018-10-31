@@ -1,5 +1,6 @@
 language: node_js
-node_js: '7'
+node_js:
+- 9
 dist: trusty
 sudo: false
 git:
@@ -22,4 +23,4 @@ after_success:
   - ./travis/deploy_pr_gae.sh
   - export LH_MIN_PASS_PERF_SCORE=96
   - export LH_TEST_URL=https://lighthouse-ci-staging-dot-cr-status.appspot.com/features
-  - npm run lh -- --perf=$LH_MIN_PASS_PERF_SCORE --pwa=50 $LH_TEST_URL
+  - npm run lh -- --perf=$LH_MIN_PASS_PERF_SCORE --pwa=65 --seo=100 $LH_TEST_URL
