@@ -12,7 +12,7 @@
     "lint": "gulp lint",
     "build": "gulp",
     "deploy": "./scripts/deploy_site.sh",
-    "lh": "lighthouse-ci"
+    "lh": "lighthousebot"
   },
   "repository": {
     "type": "git",
